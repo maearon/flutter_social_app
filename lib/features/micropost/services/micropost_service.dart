@@ -22,7 +22,7 @@ class MicropostService {
 
   Future<MicropostResponse> createMicropost(FormData formData) async {
     final response = await _apiService.post<Map<String, dynamic>>(
-      'microposts',
+      '/microposts',
       data: formData,
     );
     

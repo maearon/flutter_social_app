@@ -5,7 +5,7 @@
 *.swp
 .DS_Store
 .atom/
-.build/
+# .build/
 .buildlog/
 .history
 .svn/
@@ -43,3 +43,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# .vercel

@@ -7,7 +7,7 @@ class AuthService {
 
   Future<LoginResponse> login(LoginCredentials credentials) async {
     final response = await _apiService.post<Map<String, dynamic>>(
-      'login',
+      '/login',
       data: {'session': credentials.toJson()},
     );
     

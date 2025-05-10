@@ -236,11 +236,14 @@ Giải pháp tạm thời nếu bạn chỉ có Ubuntu:
 Dùng Android Emulator hoặc thiết bị Android thật.
 
 Build app Flutter lên web (flutter build web), host tạm bằng Vercel hoặc Firebase Hosting, rồi mở bằng Safari trên iPhone:
-
 ```
 flutter build web
-cd build/web
-vercel deploy  # hoặc firebase deploy
+mkdir vercel-dist
+cp -r build/web/* vercel-dist/
+npm install -g vercel
+vercel login
+vercel
+vercel --prod # hoặc firebase deploy
 ```
 Bạn đang dùng iPhone thật và Ubuntu thì gần như không có cách nào chạy app Flutter trực tiếp cả — trừ khi build web version.
 Bạn có muốn mình hướng dẫn build Flutter web rồi deploy nhanh để mở trên iPhone không?
