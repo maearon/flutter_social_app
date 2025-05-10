@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_social_app/core/models/api_response_message.dart';
 import 'package:flutter_social_app/features/account_activation/services/account_activation_service.dart';
 
 class AccountActivationNewScreen extends ConsumerStatefulWidget {
@@ -24,9 +25,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
   }
 
   Future<void> _resendActivationEmail() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isSubmitting = true;
@@ -35,20 +34,16 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
     });
 
     try {
-      final response = await AccountActivationService().resendActivationEmail(_emailController.text);
+      final rawResponse = await AccountActivationService().resendActivationEmail(_emailController.text);
+      final response = ApiResponseMessage.fromJson(rawResponse);
 
-      if (response.containsKey('flash')) {
-        setState(() {
-          _success = response['flash'][1];
+      setState(() {
+        _success = response.success;
+        _error = response.error;
+        if (_success != null) {
           _emailController.clear();
-        });
-      } else if (response.containsKey('error')) {
-        setState(() {
-          _error = response['error'] is List 
-              ? response['error'][0] 
-              : response['error'].toString();
-        });
-      }
+        }
+      });
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -79,10 +74,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
                   children: [
                     const Text(
                       'Resend Activation Email',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     if (_success != null)
@@ -94,10 +86,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(color: Colors.green.shade300),
                         ),
-                        child: Text(
-                          _success!,
-                          style: TextStyle(color: Colors.green.shade900),
-                        ),
+                        child: Text(_success!, style: TextStyle(color: Colors.green.shade900)),
                       ),
                     if (_error != null)
                       Container(
@@ -108,10 +97,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(color: Colors.red.shade300),
                         ),
-                        child: Text(
-                          _error!,
-                          style: TextStyle(color: Colors.red.shade900),
-                        ),
+                        child: Text(_error!, style: TextStyle(color: Colors.red.shade900)),
                       ),
                     TextFormField(
                       controller: _emailController,
@@ -135,9 +121,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _isSubmitting ? null : _resendActivationEmail,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
+                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
                         child: _isSubmitting
                             ? const CircularProgressIndicator()
                             : const Text('Resend Activation Email'),

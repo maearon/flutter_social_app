@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_social_app/features/password_reset/services/password_reset_service.dart';
+import 'package:flutter_social_app/core/models/password_reset_response.dart';
 
 class PasswordResetNewScreen extends ConsumerStatefulWidget {
   const PasswordResetNewScreen({Key? key}) : super(key: key);
@@ -24,9 +25,7 @@ class _PasswordResetNewScreenState extends ConsumerState<PasswordResetNewScreen>
   }
 
   Future<void> _requestPasswordReset() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isSubmitting = true;
@@ -35,20 +34,16 @@ class _PasswordResetNewScreenState extends ConsumerState<PasswordResetNewScreen>
     });
 
     try {
-      final response = await PasswordResetService().requestPasswordReset(_emailController.text);
+      final rawResponse = await PasswordResetService().requestPasswordReset(_emailController.text);
+      final response = PasswordResetResponse.fromJson(rawResponse);
 
-      if (response.containsKey('flash')) {
-        setState(() {
-          _success = response['flash'][1];
+      setState(() {
+        _success = response.successMessage;
+        _error = response.errorMessage;
+        if (_success != null) {
           _emailController.clear();
-        });
-      } else if (response.containsKey('error')) {
-        setState(() {
-          _error = response['error'] is List 
-              ? response['error'][0] 
-              : response['error'].toString();
-        });
-      }
+        }
+      });
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -63,9 +58,7 @@ class _PasswordResetNewScreenState extends ConsumerState<PasswordResetNewScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-      ),
+      appBar: AppBar(title: const Text('Forgot Password')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -79,10 +72,7 @@ class _PasswordResetNewScreenState extends ConsumerState<PasswordResetNewScreen>
                   children: [
                     const Text(
                       'Forgot Password',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     if (_success != null)

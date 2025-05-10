@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_social_app/core/models/user.dart'; // THÊM DÒNG NÀY
 import 'package:flutter_social_app/core/widgets/loading_spinner.dart';
 import 'package:flutter_social_app/features/user/services/user_service.dart';
 import 'package:flutter_social_app/features/auth/providers/auth_provider.dart';
@@ -17,7 +18,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   bool _loading = true;
   bool _refreshing = false;
   bool _loadingMore = false;
-  List<dynamic> _users = [];
+  List<User> _users = []; // Sửa kiểu dữ liệu thành List<User>
   int _totalCount = 0;
   int _page = 1;
 
@@ -55,15 +56,18 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
     try {
       final response = await UserService().getUsers({'page': _page});
+      final List<User> fetchedUsers = (response['users'] as List<dynamic>)
+          .map((userJson) => User.fromJson(userJson))
+          .toList();
 
       if (refresh) {
         setState(() {
-          _users = response['users'] ?? [];
+          _users = fetchedUsers;
           _totalCount = response['total_count'] ?? 0;
         });
       } else {
         setState(() {
-          _users = [..._users, ...(response['users'] ?? [])];
+          _users = [..._users, ...fetchedUsers];
           _totalCount = response['total_count'] ?? 0;
         });
       }
@@ -82,17 +86,17 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   Future<void> _loadMoreUsers() async {
     if (_loadingMore || _users.length >= _totalCount) return;
-    
+
     setState(() {
       _page++;
     });
-    
+
     await _loadUsers();
   }
 
   Future<void> _handleDelete(String id) async {
     final currentUser = ref.read(authProvider).user;
-    if (currentUser == null || !currentUser.admin) return;
+    if (currentUser == null || !currentUser.admin!) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -116,7 +120,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     if (confirmed == true) {
       try {
         final response = await UserService().deleteUser(id);
-        
+
         if (response.containsKey('flash')) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(response['flash'][1])),
@@ -162,7 +166,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ),
               ),
             ),
-            
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -170,13 +173,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(
-                        'https://secure.gravatar.com/avatar/${user['gravatar_id']}?s=50',
+                        'https://secure.gravatar.com/avatar/${user.gravatarId}?s=50',
                       ),
                     ),
                     title: Row(
                       children: [
-                        Text(user['name']),
-                        if (user['admin'] == true)
+                        Text(user.name),
+                        if (user.admin == true)
                           Container(
                             margin: const EdgeInsets.only(left: 8),
                             padding: const EdgeInsets.symmetric(
@@ -197,20 +200,18 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                           ),
                       ],
                     ),
-                    trailing: currentUser?.admin == true && 
-                              currentUser?.id.toString() != user['id'].toString()
+                    trailing: currentUser?.admin == true &&
+                            currentUser?.id.toString() != user.id
                         ? IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _handleDelete(user['id'].toString()),
+                            onPressed: () => _handleDelete(user.id),
                           )
                         : null,
-                    onTap: () => context.go('/users/${user['id']}'),
                   );
                 },
                 childCount: _users.length,
               ),
             ),
-            
             if (_loadingMore)
               const SliverToBoxAdapter(
                 child: Padding(
