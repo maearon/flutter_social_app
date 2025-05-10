@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_social_app/core/models/user.dart'; // THÊM DÒNG NÀY
 import 'package:flutter_social_app/core/widgets/loading_spinner.dart';
 import 'package:flutter_social_app/features/user/services/user_service.dart';
 import 'package:flutter_social_app/features/auth/providers/auth_provider.dart';
-
+import 'package:flutter_social_app/core/models/api_response.dart';
 class UsersScreen extends ConsumerStatefulWidget {
   const UsersScreen({Key? key}) : super(key: key);
 
@@ -16,7 +15,6 @@ class UsersScreen extends ConsumerStatefulWidget {
 class _UsersScreenState extends ConsumerState<UsersScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _loading = true;
-  bool _refreshing = false;
   bool _loadingMore = false;
   List<User> _users = []; // Sửa kiểu dữ liệu thành List<User>
   int _totalCount = 0;
@@ -45,7 +43,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Future<void> _loadUsers({bool refresh = false}) async {
     if (refresh) {
       setState(() {
-        _refreshing = true;
         _page = 1;
       });
     } else if (!_loading) {
@@ -55,30 +52,33 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     }
 
     try {
-      final response = await UserService().getUsers({'page': _page});
-      final List<User> fetchedUsers = (response['users'] as List<dynamic>)
+      final response = await UserService().getUsers(params: ListParams(page: _page));
+      final List<User> fetchedUsers = response.users
           .map((userJson) => User.fromJson(userJson))
           .toList();
+      if (fetchedUsers.isEmpty) {
+        throw Exception('Failed to load users');
+      }
 
       if (refresh) {
         setState(() {
           _users = fetchedUsers;
-          _totalCount = response['total_count'] ?? 0;
+          _totalCount = response.totalCount;
         });
       } else {
         setState(() {
           _users = [..._users, ...fetchedUsers];
-          _totalCount = response['total_count'] ?? 0;
+          _totalCount = response.totalCount;
         });
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load users: ${e.toString()}')),
       );
     } finally {
       setState(() {
         _loading = false;
-        _refreshing = false;
         _loadingMore = false;
       });
     }

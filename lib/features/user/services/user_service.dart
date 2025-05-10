@@ -20,7 +20,10 @@ class UserService {
     final apiResponse = await _apiService.get<ApiResponse<UserListResponse>>(
       'users',
       queryParameters: queryParams,
-      fromJson: (json) => UserListResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<UserListResponse>.fromJson(
+        json,
+        (data) => UserListResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -36,7 +39,10 @@ class UserService {
     final apiResponse = await _apiService.get<ApiResponse<UserShowResponse>>(
       'users/$id',
       queryParameters: queryParams,
-      fromJson: (json) => UserShowResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<UserShowResponse>.fromJson(
+        json,
+        (data) => UserShowResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -49,7 +55,10 @@ class UserService {
   Future<UserEditResponse> editUser(String id) async {
     final apiResponse = await _apiService.get<ApiResponse<UserEditResponse>>(
       'users/$id/edit',
-      fromJson: (json) => UserEditResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<UserEditResponse>.fromJson(
+        json,
+        (data) => UserEditResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -63,7 +72,10 @@ class UserService {
     final apiResponse = await _apiService.patch<ApiResponse<UserUpdateResponse>>(
       'users/$id',
       data: {'user': params.toJson()},
-      fromJson: (json) => UserUpdateResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<UserUpdateResponse>.fromJson(
+        json,
+        (data) => UserUpdateResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -77,7 +89,10 @@ class UserService {
     final apiResponse = await _apiService.post<ApiResponse<UserCreateResponse>>(
       'users',
       data: {'user': params.toJson()},
-      fromJson: (json) => UserCreateResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<UserCreateResponse>.fromJson(
+        json,
+        (data) => UserCreateResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -90,7 +105,10 @@ class UserService {
   Future<Map<String, dynamic>> deleteUser(String id) async {
     final apiResponse = await _apiService.delete<ApiResponse<Map<String, dynamic>>>(
       'users/$id',
-      fromJson: (json) => json,
+      fromJson: (json) => ApiResponse<Map<String, dynamic>>.fromJson(
+        json,
+        (data) => data,
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -104,7 +122,10 @@ class UserService {
     final apiResponse = await _apiService.get<ApiResponse<FollowResponse>>(
       'users/$id/followers',
       queryParameters: {'page': page.toString()},
-      fromJson: (json) => FollowResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<FollowResponse>.fromJson(
+        json,
+        (data) => FollowResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {
@@ -118,7 +139,10 @@ class UserService {
     final apiResponse = await _apiService.get<ApiResponse<FollowResponse>>(
       'users/$id/following',
       queryParameters: {'page': page.toString()},
-      fromJson: (json) => FollowResponse.fromJson(json),
+      fromJson: (json) => ApiResponse<FollowResponse>.fromJson(
+        json,
+        (data) => FollowResponse.fromJson(data),
+      ),
     );
 
     if (apiResponse.data == null) {

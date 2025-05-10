@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_social_app/core/widgets/loading_spinner.dart';
 import 'package:flutter_social_app/features/user/services/user_service.dart';
 import 'package:flutter_social_app/features/user/widgets/user_info.dart';
+import 'package:flutter_social_app/core/models/user.dart';
 import 'package:flutter_social_app/features/user/widgets/user_stats.dart';
 
 class ShowFollowScreen extends ConsumerStatefulWidget {
@@ -69,18 +70,19 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
 
       if (refresh) {
         setState(() {
-          _users = response['users'] ?? [];
-          _totalCount = response['total_count'] ?? 0;
-          _userData = response['user'];
+          _users = response.users ?? [];
+          _totalCount = response.totalCount;
+          _userData = response.user;
         });
       } else {
         setState(() {
-          _users = [..._users, ...(response['users'] ?? [])];
-          _totalCount = response['total_count'] ?? 0;
-          _userData = response['user'];
+          _users = [..._users, ...response.users];
+          _totalCount = response.totalCount;
+          _userData = response.user;
         });
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load ${widget.type}: ${e.toString()}')),
       );
@@ -140,6 +142,7 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
       );
     }
 
+    // ⬇️ Đây là phần build đã được sửa đúng
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.type == 'following' ? 'Following' : 'Followers'),
@@ -161,12 +164,7 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
                         child: Column(
                           children: [
                             UserInfo(
-                              user: {
-                                'id': _userData!['id'],
-                                'name': _userData!['name'],
-                                'gravatar_id': _userData!['gravatar'],
-                              },
-                              micropostCount: _userData!['micropost'],
+                              user: User.fromMap(_userData!),
                             ),
                             const SizedBox(height: 16),
                             UserStats(
@@ -186,7 +184,6 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    
                     if (_users.isEmpty && !_loading)
                       Card(
                         child: Padding(
@@ -203,7 +200,6 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
                 ),
               ),
             ),
-            
             if (_users.isNotEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
@@ -222,7 +218,6 @@ class _ShowFollowScreenState extends ConsumerState<ShowFollowScreen> {
                   childCount: _users.length,
                 ),
               ),
-              
             if (_loadingMore)
               const SliverToBoxAdapter(
                 child: Padding(

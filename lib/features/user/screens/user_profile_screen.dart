@@ -9,6 +9,7 @@ import 'package:flutter_social_app/features/user/widgets/follow_button.dart';
 import 'package:flutter_social_app/features/micropost/widgets/micropost_item.dart';
 import 'package:flutter_social_app/features/auth/providers/auth_provider.dart';
 import 'package:flutter_social_app/core/models/user_request.dart'; // thêm nếu có
+import 'package:flutter_social_app/core/models/user.dart'; // Ensure the User model is imported
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -78,17 +79,17 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
       if (refresh) {
         setState(() {
-          _userData = response['user'];
-          _microposts = response['microposts'] ?? [];
-          _totalCount = response['total_count'] ?? 0;
-          _isFollowing = response['user']['current_user_following_user'] ?? false;
+          _userData = response.user;
+          _microposts = response.microposts ?? [];
+          _totalCount = response.totalCount ?? 0;
+          _isFollowing = response.user.currentUserFollowingUser ?? false;
         });
       } else {
         setState(() {
-          _userData = response['user'];
-          _microposts = [..._microposts, ...(response['microposts'] ?? [])];
-          _totalCount = response['total_count'] ?? 0;
-          _isFollowing = response['user']['current_user_following_user'] ?? false;
+          _userData = response.user;
+          _microposts = [..._microposts, ...(response.microposts ?? [])];
+          _totalCount = response.totalCount ?? 0;
+          _isFollowing = response.user.currentUserFollowingUser ?? false;
         });
       }
     } catch (e) {
@@ -188,7 +189,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            UserInfo(user: _userData!),
+                            UserInfo(user: User.fromMap(_userData!)),
                             const SizedBox(height: 16),
                             UserStats(
                               userId: _userData!['id'].toString(),

@@ -43,28 +43,27 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
     });
 
     try {
-      final params = {
-        'email': widget.email,
-        'user': {
-          'password': _passwordController.text,
-          'password_confirmation': _passwordConfirmationController.text,
-        }
-      };
+      // Removed unused 'params' variable
 
-      final response = await PasswordResetService().resetPassword(widget.token, params);
+      final response = await PasswordResetService().resetPassword(
+        widget.token,
+        widget.email,
+        _passwordController.text,
+        _passwordConfirmationController.text,
+      );
 
-      if (response.containsKey('flash')) {
+      if (response.flash != null && response.flash!.isNotEmpty && response.flash!.length > 1) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['flash'][1])),
+            SnackBar(content: Text(response.flash![1])),
           );
           context.go('/login');
         }
-      } else if (response.containsKey('error')) {
+      } else if (response.error != null) {
         setState(() {
-          _error = response['error'] is List 
-              ? response['error'][0] 
-              : response['error'].toString();
+          _error = response.error is List 
+              ? response.error![0] 
+              : response.error.toString();
         });
       }
     } catch (e) {

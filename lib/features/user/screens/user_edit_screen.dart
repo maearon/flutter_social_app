@@ -57,17 +57,19 @@ class _UserEditScreenState extends ConsumerState<UserEditScreen> {
 
       final response = await UserService().editUser(widget.userId);
 
-      final user = User.fromJson(response['user']);
+      final user = response.user;
       setState(() {
         _user = user;
-        _gravatar = response['gravatar'];
+        _gravatar = response.gravatar;
         _nameController.text = user.name;
         _emailController.text = user.email;
       });
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load user data: ${e.toString()}')),
       );
+      // ignore: use_build_context_synchronously
       context.go('/');
     } finally {
       setState(() {
@@ -93,18 +95,24 @@ class _UserEditScreenState extends ConsumerState<UserEditScreen> {
         'password_confirmation': _passwordConfirmationController.text,
       };
 
-      final response = await UserService().updateUser(widget.userId, {'user': params});
+      final userUpdateParams = UserUpdateParams(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text,
+      );
 
-      if (response['flash_success'] != null) {
+      final response = await UserService().updateUser(widget.userId, userUpdateParams);
+
+      if (response.flashSuccess != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['flash_success'][1])),
+          SnackBar(content: Text(response.flashSuccess!.join(', '))),
         );
+        // ignore: use_build_context_synchronously
         context.go('/users/${widget.userId}');
-      } else if (response['error'] != null) {
+      } else if (response.error != null) {
         setState(() {
-          _generalError = response['error'] is List
-              ? response['error'][0]
-              : response['error'].toString();
+          _generalError = response.error!;
         });
       }
     } catch (e) {

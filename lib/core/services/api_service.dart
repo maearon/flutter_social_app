@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_social_app/core/models/auth.dart';
 import 'package:flutter_social_app/features/auth/providers/auth_provider.dart';
 
 class ApiService {
@@ -19,7 +16,7 @@ class ApiService {
   }
 
   void _initDio() {
-    final baseUrl = kDebugMode
+    const baseUrl = kDebugMode
         ? 'http://192.168.1.7:3000/api'
         : 'https://ruby-rails-boilerplate-3s9t.onrender.com/api';
 
@@ -72,7 +69,7 @@ class ApiService {
                 }
 
                 // Update auth provider
-                AuthProvider.instance.setTokens(
+                AuthNotifier.instance.setTokens(
                   accessToken: newToken,
                   refreshToken: newRememberToken ?? '',
                 );
@@ -98,7 +95,7 @@ class ApiService {
             } catch (e) {
               debugPrint('API Error in refresh token: $e');
               // Logout user on refresh token failure
-              AuthProvider.instance.logout();
+              AuthNotifier.instance.logout();
             }
           }
           return handler.next(error);

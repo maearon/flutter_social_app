@@ -35,7 +35,7 @@ class _PasswordResetNewScreenState extends ConsumerState<PasswordResetNewScreen>
 
     try {
       final rawResponse = await PasswordResetService().requestPasswordReset(_emailController.text);
-      final response = PasswordResetResponse.fromJson(rawResponse);
+      final response = PasswordResetResponse.fromJson(rawResponse as Map<String, dynamic>);
 
       setState(() {
         _success = response.successMessage;

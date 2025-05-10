@@ -3,6 +3,7 @@ class User {
   final String name;
   final String email;
   final String? gravatarId;
+  final String? avatarUrl;
   final int? size;
   final int? following;
   final int? followers;
@@ -10,11 +11,21 @@ class User {
   final bool? admin;
   final bool? activated;
 
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      email: map['email'] as String,
+      avatarUrl: map['avatar_url'] as String,
+    );
+  }
+
   User({
     required this.id,
     required this.name,
     required this.email,
     this.gravatarId,
+    this.avatarUrl,
     this.size,
     this.following,
     this.followers,

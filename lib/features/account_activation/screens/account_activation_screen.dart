@@ -48,11 +48,11 @@ class _AccountActivationScreenState extends ConsumerState<AccountActivationScree
     try {
       final response = await AccountActivationService().activateAccount(widget.token, widget.email);
 
-      if (response.containsKey('flash')) {
+      if (response.flash.isNotEmpty && response.flash.length > 1) {
         // Show success message and navigate to login
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['flash'][1])),
+            SnackBar(content: Text(response.flash[1])),
           );
           
           // Delay navigation to allow user to see the success message
@@ -62,11 +62,11 @@ class _AccountActivationScreenState extends ConsumerState<AccountActivationScree
             }
           });
         }
-      } else if (response.containsKey('error')) {
+      } else if (response.error != null) {
         setState(() {
-          _error = response['error'] is List 
-              ? response['error'][0] 
-              : response['error'].toString();
+          _error = response.error is List 
+              ? response.error[0] 
+              : response.error.toString();
         });
       }
     } catch (e) {

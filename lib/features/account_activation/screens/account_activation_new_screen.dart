@@ -35,7 +35,7 @@ class _AccountActivationNewScreenState extends ConsumerState<AccountActivationNe
 
     try {
       final rawResponse = await AccountActivationService().resendActivationEmail(_emailController.text);
-      final response = ApiResponseMessage.fromJson(rawResponse);
+      final response = ApiResponseMessage.fromJson(rawResponse as Map<String, dynamic>);
 
       setState(() {
         _success = response.success;
