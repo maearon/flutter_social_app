@@ -24,6 +24,8 @@ class AuthState {
     this.refreshToken,
   });
 
+  factory AuthState.initial() => AuthState();
+
   AuthState copyWith({
     User? user,
     bool? isLoggedIn,
@@ -48,17 +50,21 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
   final FlutterSecureStorage _secureStorage;
-  
+
   static AuthNotifier? _instance;
-  
+
   static AuthNotifier get instance {
     _instance ??= AuthNotifier(AuthService(), const FlutterSecureStorage());
     return _instance!;
   }
 
-  AuthNotifier(this._authService, this._secureStorage) : super(AuthState()) {
+  AuthNotifier(this._authService, this._secureStorage)
+      : super(AuthState.initial()) {
     checkAuthStatus();
   }
+
+  bool get initialized => state.initialized;
+  bool get isLoggedIn => state.isLoggedIn;
 
   Future<void> login(LoginCredentials credentials) async {
     state = state.copyWith(isLoading: true, error: null);
