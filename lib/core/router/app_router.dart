@@ -75,22 +75,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/users/:id',
         builder: (context, state) {
-          final id = state.params['id']!;
+          final id = state.pathParameters['id']!;
           return UserProfileScreen(userId: id);
         },
       ),
       GoRoute(
         path: '/users/:id/edit',
         builder: (context, state) {
-          final id = state.params['id']!;
+          final id = state.pathParameters['id']!;
           return UserEditScreen(userId: id);
         },
       ),
       GoRoute(
         path: '/users/:id/:type',
         builder: (context, state) {
-          final id = state.params['id']!;
-          final type = state.params['type']!;
+          final id = state.pathParameters['id']!;
+          final type = state.pathParameters['type']!;
           return ShowFollowScreen(userId: id, type: type);
         },
       ),
@@ -101,8 +101,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/account-activation/:token',
         builder: (context, state) {
-          final token = state.params['token']!;
-          final email = state.queryParams['email'] ?? '';
+          final token = state.pathParameters['token']!;
+          final email = state.uri.queryParameters['email'] ?? '';
           return AccountActivationScreen(token: token, email: email);
         },
       ),
@@ -113,8 +113,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/password-reset/:token',
         builder: (context, state) {
-          final token = state.params['token']!;
-          final email = state.queryParams['email'] ?? '';
+          final token = state.pathParameters['token']!;
+          final email = state.uri.queryParameters['email'] ?? '';
           return PasswordResetScreen(token: token, email: email);
         },
       ),

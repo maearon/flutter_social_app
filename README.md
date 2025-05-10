@@ -85,8 +85,12 @@ To run the app:
 A new Flutter project.
 
 ```
+flutter clean
+flutter pub get
+flutter test
 flutter devices
 flutter run -d emulator-5554
+
 ```
 
 ## Getting Started
