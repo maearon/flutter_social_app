@@ -35,7 +35,7 @@ class ListParams {
   final int? page;
   final Map<String, dynamic> additionalParams;
 
-  ListParams({
+  const ListParams({
     this.page,
     this.additionalParams = const {},
   });

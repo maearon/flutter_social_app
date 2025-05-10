@@ -2,7 +2,7 @@
 
 import 'package:flutter_social_app/core/models/api_response.dart';
 import 'package:flutter_social_app/core/models/user.dart';
-import 'package:flutter_social_app/core/models/user_request.dart'; // ✅ Import mới
+import 'package:flutter_social_app/core/models/user_request.dart';
 import 'package:flutter_social_app/core/services/api_service.dart';
 
 class UserService {
@@ -17,68 +17,114 @@ class UserService {
 
     queryParams.addAll(params.additionalParams);
 
-    final response = await _apiService.get<Map<String, dynamic>>(
+    final apiResponse = await _apiService.get<ApiResponse<UserListResponse>>(
       'users',
       queryParameters: queryParams,
+      fromJson: (json) => UserListResponse.fromJson(json),
     );
 
-    return UserListResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to fetch users: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
-  // ✅ Sửa hàm getUser để dùng UserRequest thay vì ListParams hoặc Map
   Future<UserShowResponse> getUser(String id, UserRequest request) async {
     final queryParams = request.toJson();
 
-    final response = await _apiService.get<Map<String, dynamic>>(
+    final apiResponse = await _apiService.get<ApiResponse<UserShowResponse>>(
       'users/$id',
       queryParameters: queryParams,
+      fromJson: (json) => UserShowResponse.fromJson(json),
     );
 
-    return UserShowResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to fetch user: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<UserEditResponse> editUser(String id) async {
-    final response = await _apiService.get<Map<String, dynamic>>('users/$id/edit');
-    return UserEditResponse.fromJson(response);
+    final apiResponse = await _apiService.get<ApiResponse<UserEditResponse>>(
+      'users/$id/edit',
+      fromJson: (json) => UserEditResponse.fromJson(json),
+    );
+
+    if (apiResponse.data == null) {
+      throw Exception('Failed to fetch edit user: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<UserUpdateResponse> updateUser(String id, UserUpdateParams params) async {
-    final response = await _apiService.patch<Map<String, dynamic>>(
+    final apiResponse = await _apiService.patch<ApiResponse<UserUpdateResponse>>(
       'users/$id',
       data: {'user': params.toJson()},
+      fromJson: (json) => UserUpdateResponse.fromJson(json),
     );
 
-    return UserUpdateResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to update user: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<UserCreateResponse> createUser(UserCreateParams params) async {
-    final response = await _apiService.post<Map<String, dynamic>>(
+    final apiResponse = await _apiService.post<ApiResponse<UserCreateResponse>>(
       'users',
       data: {'user': params.toJson()},
+      fromJson: (json) => UserCreateResponse.fromJson(json),
     );
 
-    return UserCreateResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to create user: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<Map<String, dynamic>> deleteUser(String id) async {
-    return await _apiService.delete<Map<String, dynamic>>('users/$id');
+    final apiResponse = await _apiService.delete<ApiResponse<Map<String, dynamic>>>(
+      'users/$id',
+      fromJson: (json) => json,
+    );
+
+    if (apiResponse.data == null) {
+      throw Exception('Failed to delete user: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<FollowResponse> getFollowers(String id, int page) async {
-    final response = await _apiService.get<Map<String, dynamic>>(
+    final apiResponse = await _apiService.get<ApiResponse<FollowResponse>>(
       'users/$id/followers',
       queryParameters: {'page': page.toString()},
+      fromJson: (json) => FollowResponse.fromJson(json),
     );
 
-    return FollowResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to fetch followers: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 
   Future<FollowResponse> getFollowing(String id, int page) async {
-    final response = await _apiService.get<Map<String, dynamic>>(
+    final apiResponse = await _apiService.get<ApiResponse<FollowResponse>>(
       'users/$id/following',
       queryParameters: {'page': page.toString()},
+      fromJson: (json) => FollowResponse.fromJson(json),
     );
 
-    return FollowResponse.fromJson(response);
+    if (apiResponse.data == null) {
+      throw Exception('Failed to fetch following: ${apiResponse.error ?? 'Unknown error'}');
+    }
+
+    return apiResponse.data!;
   }
 }
