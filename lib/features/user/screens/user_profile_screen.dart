@@ -8,6 +8,7 @@ import 'package:flutter_social_app/features/user/widgets/user_stats.dart';
 import 'package:flutter_social_app/features/user/widgets/follow_button.dart';
 import 'package:flutter_social_app/features/micropost/widgets/micropost_item.dart';
 import 'package:flutter_social_app/features/auth/providers/auth_provider.dart';
+import 'package:flutter_social_app/core/models/user_request.dart'; // thêm nếu có
 
 class UserProfileScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -68,7 +69,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
       final currentUser = ref.read(authProvider).user;
       if (currentUser == null) return;
 
-      final response = await UserService().getUser(widget.userId, {'page': _page});
+      // 🔧 Sửa đoạn này: truyền custom type thay vì Map
+      final request = UserRequest(page: _page);
+      final response = await UserService().getUser(
+        widget.userId,
+        UserRequest(page: _page), // ✅ truyền đúng kiểu
+      );
 
       if (refresh) {
         setState(() {
