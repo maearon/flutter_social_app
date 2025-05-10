@@ -1,3 +1,85 @@
+# Flutter Social App Implementation
+
+I've created a comprehensive Flutter application that replicates the functionality, structure, and UI behavior of the React Native app. The Flutter app follows modern Flutter development practices and includes all the features from the original app.
+
+## Key Features Implemented
+
+1. **State Management**
+
+1. Used Riverpod for state management, replacing Zustand
+2. Implemented proper authentication state handling with token management
+
+
+
+2. **API Communication**
+
+1. Used Dio for API calls, replacing Ky
+2. Implemented automatic token refresh on 401 errors
+3. Added token revocation on logout
+
+
+
+3. **Navigation**
+
+1. Implemented navigation using go_router
+2. Created a comprehensive routing system with protected routes
+
+
+
+4. **Screens**
+
+1. Home screen with micropost feed
+2. User profile and edit screens
+3. Authentication screens (login, signup)
+4. Password reset and account activation
+5. Static pages (about, contact)
+
+
+
+5. **Components**
+
+1. Reusable widgets for common UI elements
+2. Micropost form and item components
+3. User info and stats components
+4. Follow button component
+
+
+
+6. **Security**
+
+1. Secure storage for tokens
+2. Proper error handling
+3. Form validation
+
+
+
+
+
+## Project Structure
+
+The project follows a feature-based architecture:
+
+- **core**: Contains shared utilities, models, services, and widgets
+- **features**: Contains feature-specific code organized by domain
+
+- **auth**: Authentication-related screens and services
+- **home**: Home screen and related components
+- **micropost**: Micropost-related components and services
+- **user**: User-related screens, components, and services
+- **static**: Static pages like About and Contact
+
+
+
+
+
+## Getting Started
+
+To run the app:
+
+1. Make sure you have Flutter installed
+2. Run `flutter pub get` to install dependencies
+3. Run `flutter run` to start the app
+
 # flutter_social_app
 
 A new Flutter project.
@@ -37,6 +119,8 @@ README.md	Nếu có mô tả project hoặc hướng dẫn chạy thì nên gi�
 Please analyze the React Native TypeScript project located in the `react-native-boilerplate` directory on the right.
 
 Then, generate a fully functional Flutter (Dart) application that replicates the entire functionality, structure, and UI behavior of this React Native app as closely as possible.
+
+**The Flutter project where the generated code should be added is named `flutter_social_app`. Its structure is already initialized with default folders (`lib/`, `android/`, `ios/`, etc.) and a main entry file `lib/main.dart`. You may safely create new files or folders inside this project.**
 
 Requirements:
 
