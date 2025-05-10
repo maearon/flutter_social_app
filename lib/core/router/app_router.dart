@@ -25,10 +25,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authState.isLoggedIn;
       final isInitialized = authState.initialized;
-      final isGoingToAuth = state.location == '/login' || 
-                            state.location == '/signup' || 
-                            state.location.startsWith('/password-reset') ||
-                            state.location.startsWith('/account-activation');
+      final isGoingToAuth = state.uri.path == '/login' || 
+                            state.uri.path == '/signup' || 
+                            state.uri.path.startsWith('/password-reset') ||
+                            state.uri.path.startsWith('/account-activation');
 
       // If not initialized yet, don't redirect
       if (!isInitialized) {
